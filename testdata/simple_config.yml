@@ -1,0 +1,16 @@
+---
+
+port: 8675
+secret: supersecret
+whitelisted_clients:
+  - 127.0.0.1
+
+routes:
+  - path: /foo
+    cmd: echo foo
+
+  - path: /bar
+    cmd: echo bar
+
+  - path: /date
+    cmd: date
