@@ -10,7 +10,7 @@ import (
 var configPath string
 
 func init() {
-	c := flag.String("c", "", "go-remote config file")
+	c := flag.String("c", "", "specify bashRPC config file")
 	flag.Parse()
 	configPath = *c
 }
