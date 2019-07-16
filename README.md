@@ -1,4 +1,4 @@
-# go-remote
+# bashRPC
 Simple HTTP server that executes configured commands remotely.
 
 

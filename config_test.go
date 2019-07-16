@@ -1,37 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"testing"
+
+	. "github.com/binarymason/bashRPC/internal/testhelpers"
 )
 
-func Given(s string) {
-	fmt.Println("Given", s)
-}
-
-func When(s string) {
-	fmt.Println("  When", s)
-}
-
-func Then(s string) {
-	fmt.Println("    Then", s)
-}
-
-func And(s string) {
-	fmt.Println("    And", s)
-}
-
-func Assert(a, x interface{}, t *testing.T) {
-
-	a = fmt.Sprintf("%v", a)
-	x = fmt.Sprintf("%v", x)
-	if a != x {
-		t.Errorf("Expected %s, but got: %s", x, a)
-	}
-}
-
 func TestLoad(t *testing.T) {
-	cfg, _ := loadConfig("./testdata/simple_config.yml")
+	cfg, _ := loadConfig("./test/data/simple_config.yml")
 	expectedRoutes := []route{
 		route{Path: "/foo", Cmd: "echo foo"},
 		route{Path: "/bar", Cmd: "echo bar"},

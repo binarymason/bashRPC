@@ -1,0 +1,37 @@
+---
+
+port: 8675
+secret: supersecret
+
+whitelisted_clients:
+  - 127.0.0.1
+  - 127.0.0.2
+  - 127.0.0.3
+  - 1.2.3.4
+  - 5.6.7.8.9
+
+routes:
+  - path: /version
+    cmd: echo "1.2.3"
+
+  - path: /nested/route
+    cmd: echo "it works"
+
+  - path: /fail
+    cmd: echo "womp womp" && exit 1
+
+  - path: /pipe
+    cmd: echo "it works with pipe" | grep pipe | awk '{ print "piping " $2 }'
+
+  - path: /backslashes
+    cmd: |
+      echo "it" && \
+        echo "works"
+
+  - path: /multiline
+    cmd: |
+      echo "I could be a complex bash script"
+      echo "Today I am merely a bunch of strings"
+      echo "Indeed, I am a multiline string"
+      echo "I think, therefore I am."
+
