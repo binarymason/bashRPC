@@ -1,0 +1,16 @@
+---
+
+port: 8675
+
+whitelisted_clients:
+  - 127.0.0.1
+
+# REQUIRED:
+# This secret is passed by clients as an Authorization header.  TODO: accept environment variable overrides.
+# secret: supersecret
+
+routes:
+  - path: /
+    cmd: |
+      echo "bashRPC server is running."
+      echo "Configure more routes in bashrpc.yml file."

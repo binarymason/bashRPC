@@ -1,0 +1,29 @@
+name: "bashRPC"
+arch: "amd64"
+platform: "linux"
+version: "${BASHRPC_VERSION}"
+section: "default"
+priority: "extra"
+replaces:
+- bashrpc
+provides:
+- bashrpc
+maintainer: "John Mason <john@johnmason.io>"
+homepage: "http://github.com/binarymason/bashRPC"
+license: "MIT"
+bindir: "/usr/local/bin"
+files:
+  ./dist/pkg/bashrpc: "/usr/local/bin/bashrpc"
+  ./dist/init/systemd/bashrpc.service: "/etc/bashrpc/init/systemd/bashrpc.service"
+  ./dist/init/sysvinit/bashrpc: "/etc/bashrpc/init/sysvinit/bashrpc"
+config_files:
+  ./dist/bashrpc.yml: "/etc/bashrpc/bashrpc.yml"
+overrides:
+  rpm:
+    scripts:
+      postinstall: ./dist/scripts/postinstall.sh
+      postremove: ./dist/scripts/postremove.sh
+  deb:
+    scripts:
+      postinstall: ./dist/scripts/postinstall.sh
+      postremove: ./dist/scripts/postremove.sh

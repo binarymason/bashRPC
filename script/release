@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+set -e
+
+branch=$(git rev-parse --abbrev-ref HEAD)
+
+if [ "$branch" != master ]; then
+  echo "! ERROR: not on master branch"
+  echo "! exiting..."
+  exit 1
+fi
+
+# User calendar versioning instead of semantic.
+ts=$(TZ=America/New_York date '+%y.%m.%d-%H%M')
+tag="v$ts"
+pkg_path=./dist/pkg
+
+echo "* cleaning any pre-existing build artifacts"
+rm -rf "$pkg_path"
+mkdir "$pkg_path"
+
+echo "* building go binary"
+go build -o "$pkg_path/bashrpc"
+
+echo "* building rpm package"
+BASHRPC_VERSION="$tag" nfpm pkg --target "$pkg_path/bashrpc-$tag.rpm"
+
+echo "* building rpm package"
+BASHRPC_VERSION="$tag" nfpm pkg --target "$pkg_path/bashrpc-$tag.deb"
+
+echo "* creating tag: $tag"
+echo "skip"
+git tag "$tag"
+
+echo "* pushing tag: $tag"
+git push origin "$tag"
+
+echo "* packages placed in $pkg_path"
+for f in $pkg_path/*; do
+  echo -e "\t- $f"
+done
+
+echo "* you are ready to make a release on GitHub."
+echo "* OK"

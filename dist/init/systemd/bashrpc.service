@@ -1,0 +1,11 @@
+[Unit]
+Description=bashrpc
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5s
+ExecStart=/usr/local/bin/bashrpc
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,72 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          bashrpc
+# Required-Start:    $local_fs $network $named $time $syslog
+# Required-Stop:     $local_fs $network $named $time $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: starts bashrpc
+# Description:       starts bashrpc
+### END INIT INFO
+
+DESC="bashRPC"
+NAME=bashrpc
+DAEMON=/usr/local/bin/bashrpc
+
+
+LOGFILE=/var/log/$NAME.log
+CONFIGFILE=/etc/bashrpc/bashrpc.yml
+
+test -x $DAEMON || exit 0
+
+start() {
+    touch $LOGFILE
+    nohup "$DAEMON" -c "$CONFIGFILE" &
+}
+
+stop() {
+  pkill -f "$DAEMON"
+}
+
+reload() {
+  echo "Reload not supported.  Restarting instead"
+  start
+  stop
+}
+
+status() {
+    if pgrep -f "$DAEMON" > /dev/null; then
+      echo "$NAME is running"
+    else
+        echo "$NAME is not running"
+    fi
+}
+
+case "$1" in
+    start)
+        echo "Starting $NAME"
+        start
+    ;;
+    stop)
+        echo "Stopping $NAME"
+        stop
+    ;;
+    restart)
+        echo "Restarting $NAME"
+        stop
+        start
+    ;;
+    reload)
+        echo "Reloading $NAME"
+        reload
+    ;;
+    status)
+        status
+    ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|reload|status}"
+        exit 2
+    ;;
+esac
+
+exit 0
