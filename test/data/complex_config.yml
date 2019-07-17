@@ -1,7 +1,10 @@
 ---
 
 port: 8675
+
 secret: supersecret
+cert: /tmp/foo/pki/bar.cert
+key: /tmp/foo/pki/bar.key
 
 whitelisted_clients:
   - 127.0.0.1

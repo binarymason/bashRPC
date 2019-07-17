@@ -28,5 +28,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	rtr.listen()
+	if err := rtr.listen(); err != nil {
+		log.Fatal(fmt.Sprintf("%v", err))
+		os.Exit(1)
+	}
 }

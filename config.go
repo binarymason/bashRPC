@@ -11,7 +11,7 @@ import (
 const defaultCertPath = "/etc/bashrpc/"
 
 type config struct {
-	Cert        string   `yaml:"Cert"`
+	Cert        string   `yaml:"cert"`
 	Key         string   `yaml:"key"`
 	Port        string   `yaml:"port"`
 	Routes      []route  `yaml:"routes"`

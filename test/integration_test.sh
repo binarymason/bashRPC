@@ -4,7 +4,7 @@ set -e
 
 test_secret=supersecret
 cmd="bashRPC -c ./test/data/complex_config.yml"
-url="localhost:8675"
+url="https://localhost:8675"
 
 setup() {
   go install
@@ -35,13 +35,13 @@ assert_status_code() {
   local expected_code="$1"
   local status_code
   echo -e "\t* ${*:2}"
-  status_code=$(curl -sw '%{http_code}' "${@:2}" | tail -n 1)
+  status_code=$(curl -k -sw '%{http_code}' "${@:2}" | tail -n 1)
   if [ "$status_code" != "$expected_code" ]; then
     fail "expected status code to be $expected_code but got $status_code"
   fi
 
 }
-curl -f -H "Authorization: supersecret" localhost:8675
+curl -kf -H "Authorization: supersecret" "$url"
 
 echo "# test 404 endpoint"
 assert_status_code 404 -H "Authorization: $test_secret" "$url/foobar"
@@ -62,7 +62,7 @@ assert_response() {
   endpoint="$1"
   expected_response="$2"
   echo -e "\t* $endpoint"
-  res=$(curl -H "Authorization: $test_secret" -s "$url$endpoint")
+  res=$(curl -k -H "Authorization: $test_secret" -s "$url$endpoint")
   if [ "$res" != "$expected_response" ]; then
     fail "expected response to be: $expected_response, but got: $res"
   fi

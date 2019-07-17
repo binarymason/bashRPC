@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -19,9 +20,12 @@ func initSSL(certPath, keyPath string) ([]byte, error) {
 	if err != nil {
 		return []byte{}, err
 	}
-
-	mkdirP(certPath)
-	mkdirP(keyPath)
+	if err := mkdirP(certPath); err != nil {
+		return []byte{}, err
+	}
+	if err := mkdirP(keyPath); err != nil {
+		return []byte{}, err
+	}
 
 	command := "openssl"
 	args := []string{
@@ -61,12 +65,16 @@ func getFQDN() (fqdn string, err error) {
 	return
 }
 
-func mkdirP(p string) {
+func mkdirP(p string) error {
 	absPath, _ := filepath.Abs(p)
 	dir := filepath.Dir(absPath)
-	if _, err := os.Stat(absPath); os.IsNotExist(err) {
-		os.MkdirAll(dir, 0700)
+	_, err := os.Stat(absPath)
 
+	if os.IsExist(err) {
+		return nil
 	}
+
+	log.Println("# creating directory: ", dir)
+	return os.MkdirAll(dir, 0700)
 
 }
