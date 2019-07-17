@@ -29,7 +29,6 @@ echo "* building rpm package"
 BASHRPC_VERSION="$tag" nfpm pkg --target "$pkg_path/bashrpc-$tag.deb"
 
 echo "* creating tag: $tag"
-echo "skip"
 git tag "$tag"
 
 echo "* pushing tag: $tag"
