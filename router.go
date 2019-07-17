@@ -28,12 +28,12 @@ func newRouter(p string) (router, error) {
 	return rtr, nil
 }
 
-func (rtr *router) listen() {
+func (rtr *router) listen() error {
+	initSSL(rtr.config.Cert, rtr.config.Key)
 	http.HandleFunc("/", rtr.handler)
 
 	fmt.Println("listening on port", rtr.config.Port)
-	http.ListenAndServe(":"+rtr.config.Port, nil)
-
+	return http.ListenAndServeTLS(":"+rtr.config.Port, rtr.config.Cert, rtr.config.Key, nil)
 }
 
 func (rtr *router) handler(w http.ResponseWriter, r *http.Request) {

@@ -8,11 +8,15 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+const defaultCertPath = "/etc/bashrpc/"
+
 type config struct {
+	Cert        string   `yaml:"cert"`
+	Key         string   `yaml:"key"`
 	Port        string   `yaml:"port"`
+	Routes      []route  `yaml:"routes"`
 	Secret      string   `yaml:"secret"`
 	Whitelisted []string `yaml:"whitelisted_clients"`
-	Routes      []route  `yaml:"routes"`
 }
 
 type route struct {
@@ -22,6 +26,8 @@ type route struct {
 
 func loadConfig(p string) (config, error) {
 	cfg := config{}
+	setConfigDefaults(&cfg)
+
 	data, err := ioutil.ReadFile(p)
 	if err != nil {
 		return cfg, err
@@ -29,6 +35,13 @@ func loadConfig(p string) (config, error) {
 
 	err = yaml.Unmarshal([]byte(data), &cfg)
 	return cfg, err
+}
+
+func setConfigDefaults(cfg *config) {
+	defaultPKIPath := "/etc/bashrpc/pki"
+	cfg.Key = defaultPKIPath + "/bashrpc.key"
+	cfg.Cert = defaultPKIPath + "/bashrpc.cert"
+	cfg.Port = "8675"
 }
 
 func validateConfig(cfg config) error {
@@ -40,6 +53,14 @@ func validateConfig(cfg config) error {
 
 	if cfg.Secret == "" {
 		issues = append(issues, "secret is missing")
+	}
+
+	if cfg.Key == "" {
+		issues = append(issues, "key is missing")
+	}
+
+	if cfg.Cert == "" {
+		issues = append(issues, "cert is missing")
 	}
 
 	if len(cfg.Whitelisted) == 0 {

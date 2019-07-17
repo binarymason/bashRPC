@@ -63,7 +63,7 @@ sudo systemctl start bashrpc
 3) ping server
 
 ```bash
-curl -H "Authorization: supersecret" localhost:8675/uptime
+curl -k -H "Authorization: supersecret" https://localhost:8675/uptime
 ```
 
 
