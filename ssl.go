@@ -7,6 +7,8 @@ import (
 	"strings"
 )
 
+// initSSL creates a SSL certificate and key using system's openssl.
+// TODO: don't blow away PKI if it already exists and is valid.
 func initSSL(certPath, keyPath string) ([]byte, error) {
 	if out, err := initRndFile(); err != nil {
 		return out, err
