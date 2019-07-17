@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -15,6 +17,9 @@ func initSSL(certPath, keyPath string) ([]byte, error) {
 	if err != nil {
 		return []byte{}, err
 	}
+
+	mkdirP(certPath)
+	mkdirP(keyPath)
 
 	command := "openssl"
 	args := []string{
@@ -52,4 +57,14 @@ func getFQDN() (fqdn string, err error) {
 	fqdn = fqdn[:len(fqdn)-1] // removing EOL
 
 	return
+}
+
+func mkdirP(p string) {
+	absPath, _ := filepath.Abs(p)
+	dir := filepath.Dir(absPath)
+	if _, err := os.Stat(absPath); os.IsNotExist(err) {
+		os.MkdirAll(dir, 0700)
+
+	}
+
 }
