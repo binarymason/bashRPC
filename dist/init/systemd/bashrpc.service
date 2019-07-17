@@ -5,7 +5,7 @@ Description=bashrpc
 Type=simple
 Restart=always
 RestartSec=5s
-ExecStart=/usr/local/bin/bashrpc -c /etc/bashrpc/bashrpc.yml
+ExecStart=/usr/local/bin/bashrpc -c /etc/bashrpc/bashrpc.yml --log /var/log/bashrpc.log
 
 [Install]
 WantedBy=multi-user.target

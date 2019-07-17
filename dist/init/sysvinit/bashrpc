@@ -21,7 +21,7 @@ test -x $DAEMON || exit 0
 
 start() {
     touch $LOGFILE
-    nohup "$DAEMON" -c "$CONFIGFILE" &
+    nohup "$DAEMON" -c "$CONFIGFILE" --log "$LOGFILE" &
 }
 
 stop() {

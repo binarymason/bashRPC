@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -32,8 +33,9 @@ func (rtr *router) listen() error {
 	initSSL(rtr.config.Cert, rtr.config.Key)
 	http.HandleFunc("/", rtr.handler)
 
-	fmt.Println("listening on port", rtr.config.Port)
-	return http.ListenAndServeTLS(":"+rtr.config.Port, rtr.config.Cert, rtr.config.Key, nil)
+	log.Println("starting bashRPC server...")
+	log.Println("listening on port", rtr.config.Port)
+	return http.ListenAndServeTLS(":"+rtr.config.Port, rtr.config.Cert, rtr.config.Key, logRequest(http.DefaultServeMux))
 }
 
 func (rtr *router) handler(w http.ResponseWriter, r *http.Request) {

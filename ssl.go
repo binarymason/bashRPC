@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -74,7 +73,5 @@ func mkdirP(p string) error {
 		return nil
 	}
 
-	log.Println("# creating directory: ", dir)
 	return os.MkdirAll(dir, 0700)
-
 }
