@@ -19,6 +19,20 @@ echo baz
 	Assert(string(out), "foo\nbar\nbaz\n", t)
 }
 
+func TestBashSetE(t *testing.T) {
+	command := `
+echo "first"
+BOOM
+echo "second"
+  `
+	out, err := runCommand(command)
+
+	if err == nil {
+		t.Error("expected an error but received none")
+	}
+	Assert(string(out), "first\nbash: line 2: BOOM: command not found\n", t)
+}
+
 func TestFailingCommand(t *testing.T) {
 	out, err := runCommand("echo 'BOOM!' && exit 1")
 

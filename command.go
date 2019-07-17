@@ -7,7 +7,7 @@ import (
 )
 
 func runCommand(command string) (out []byte, err error) {
-	out, err = exec.Command("bash", "-c", command).CombinedOutput()
+	out, err = exec.Command("bash", "-ce", command).CombinedOutput()
 
 	if err != nil {
 		return out, errors.Wrap(err, string(out))
