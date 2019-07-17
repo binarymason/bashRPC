@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func initSSL(outDir string) ([]byte, error) {
+func initSSL(certPath, keyPath string) ([]byte, error) {
 	if out, err := initRndFile(); err != nil {
 		return out, err
 	}
@@ -16,8 +16,6 @@ func initSSL(outDir string) ([]byte, error) {
 		return []byte{}, err
 	}
 
-	keyPath := fmt.Sprintf("%s/%s.key", outDir, fqdn)
-	certPath := fmt.Sprintf("%s/%s.cert", outDir, fqdn)
 	command := "openssl"
 	args := []string{
 		"req",
@@ -39,6 +37,10 @@ func initSSL(outDir string) ([]byte, error) {
 	return runCommand(command + " " + strings.Join(args, " "))
 }
 
+func initRndFile() ([]byte, error) {
+	return runCommand(`openssl rand -out "$HOME/.rnd" -hex 256`)
+}
+
 func getFQDN() (fqdn string, err error) {
 	out, err := runCommand("hostname --fqdn")
 
@@ -50,8 +52,4 @@ func getFQDN() (fqdn string, err error) {
 	fqdn = fqdn[:len(fqdn)-1] // removing EOL
 
 	return
-}
-
-func initRndFile() ([]byte, error) {
-	return runCommand(`openssl rand -out "$HOME/.rnd" -hex 256`)
 }

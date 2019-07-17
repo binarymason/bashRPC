@@ -19,28 +19,29 @@ func fileExists(filename string) bool {
 
 }
 func TestInitSSL(t *testing.T) {
+	var (
+		keyPath  = "/tmp/test/test-host.key"
+		certPath = "/tmp/test/test-host.cert"
+	)
 	Given("openssl is available on the machine")
 	if out, err := exec.Command("openssl", "version").CombinedOutput(); err != nil {
 		t.Error(errors.Wrap(err, string(out)))
 	}
 
 	When("an output directory is specified")
-	outDir := "/tmp/test"
-	if _, err := initSSL(outDir); err != nil {
+	if _, err := initSSL(certPath, keyPath); err != nil {
 		t.Error(err)
 	}
 
 	Then("a SSL private key is generated")
-	key := outDir + "/tp.key"
-	Assert(fileExists(key), true, t)
-	if out, err := exec.Command("openssl", "rsa", "-in", key, "-check").CombinedOutput(); err != nil {
+	Assert(fileExists(keyPath), true, t)
+	if out, err := exec.Command("openssl", "rsa", "-in", keyPath, "-check").CombinedOutput(); err != nil {
 		t.Error(errors.Wrap(err, string(out)))
 	}
 
 	And("a SSL certificate is generated")
-	cert := outDir + "/tp.cert"
-	Assert(fileExists(cert), true, t)
-	if out, err := exec.Command("openssl", "x509", "-in", cert, "-text").CombinedOutput(); err != nil {
+	Assert(fileExists(certPath), true, t)
+	if out, err := exec.Command("openssl", "x509", "-in", certPath, "-text").CombinedOutput(); err != nil {
 		t.Error(errors.Wrap(err, string(out)))
 	}
 }

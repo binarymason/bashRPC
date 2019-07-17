@@ -41,7 +41,7 @@ assert_status_code() {
   fi
 
 }
-curl -H "Authorization: supersecret" localhost:8675
+curl -f -H "Authorization: supersecret" localhost:8675
 
 echo "# test 404 endpoint"
 assert_status_code 404 -H "Authorization: $test_secret" "$url/foobar"
