@@ -9,7 +9,7 @@
 # Description:       starts bashrpc
 ### END INIT INFO
 
-DESC="bashRPC"
+DESC="bashrpc"
 NAME=bashrpc
 DAEMON=/usr/local/bin/bashrpc
 

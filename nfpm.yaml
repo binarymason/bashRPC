@@ -1,4 +1,4 @@
-name: "bashRPC"
+name: "bashrpc"
 arch: "amd64"
 platform: "linux"
 version: "${BASHRPC_VERSION}"
