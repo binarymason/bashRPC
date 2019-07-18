@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -22,6 +23,7 @@ func initSSL(certPath, keyPath string) ([]byte, error) {
 
 func initSSLKey(keyPath string) (out []byte, err error) {
 	if fileExists(keyPath) {
+		log.Println("using existing SSL key:", keyPath)
 		return
 	}
 
@@ -29,11 +31,14 @@ func initSSLKey(keyPath string) (out []byte, err error) {
 		return
 	}
 
+	log.Println("SSL key does not exist")
+	log.Println("creating", keyPath)
 	return runCommand(fmt.Sprintf("openssl genrsa -out %s 4096", keyPath))
 }
 
 func initSSLCert(certPath, keyPath string) (out []byte, err error) {
 	if fileExists(certPath) {
+		log.Println("using existing SSL cert:", certPath)
 		return
 	}
 
@@ -63,6 +68,8 @@ func initSSLCert(certPath, keyPath string) (out []byte, err error) {
 		certPath,
 	}
 
+	log.Println("SSL cert does not exist")
+	log.Println("creating", certPath)
 	return runCommand("openssl " + strings.Join(args, " "))
 }
 
@@ -72,6 +79,8 @@ func initRndFile() (out []byte, err error) {
 		return
 	}
 
+	log.Println("openssl random seed file does not exist")
+	log.Println("creating", rndPath)
 	command := fmt.Sprintf("openssl rand -out %s -hex 256", rndPath)
 	return runCommand(command)
 }
