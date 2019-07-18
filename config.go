@@ -13,6 +13,7 @@ const defaultCertPath = "/etc/bashrpc/"
 type config struct {
 	Cert        string   `yaml:"cert"`
 	Key         string   `yaml:"key"`
+	Log         string   `yaml:"log"`
 	Port        string   `yaml:"port"`
 	Routes      []route  `yaml:"routes"`
 	Secret      string   `yaml:"secret"`
@@ -39,12 +40,13 @@ func loadConfig(p string) (config, error) {
 
 func setConfigDefaults(cfg *config) {
 	defaultPKIPath := "/etc/bashrpc/pki"
-	cfg.Key = defaultPKIPath + "/bashrpc.key"
 	cfg.Cert = defaultPKIPath + "/bashrpc.cert"
+	cfg.Key = defaultPKIPath + "/bashrpc.key"
+	cfg.Log = "bashrpc.log"
 	cfg.Port = "8675"
 }
 
-func validateConfig(cfg config) error {
+func validateConfig(cfg *config) (err error) {
 	var issues []string
 
 	if cfg.Port == "" {
@@ -63,13 +65,17 @@ func validateConfig(cfg config) error {
 		issues = append(issues, "cert is missing")
 	}
 
+	if cfg.Log == "" {
+		issues = append(issues, "log is missing")
+	}
+
 	if len(cfg.Whitelisted) == 0 {
 		issues = append(issues, "no whitelisted clients are specified")
 	}
 
 	if len(issues) > 0 {
-		return errors.New("config validation errors: " + strings.Join(issues, ", "))
+		err = errors.New("config validation errors: " + strings.Join(issues, ", "))
 	}
 
-	return nil
+	return
 }

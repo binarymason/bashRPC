@@ -3,7 +3,12 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 )
+
+func initLog(logPath string) (*os.File, error) {
+	return os.OpenFile(logPath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+}
 
 type loggingResponseWriter struct {
 	http.ResponseWriter

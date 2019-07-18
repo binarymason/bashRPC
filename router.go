@@ -12,20 +12,9 @@ type router struct {
 	config config
 }
 
-func newRouter(p string) (router, error) {
-	rtr := router{}
-	cfg, err := loadConfig(p)
-
-	if err != nil {
-		return rtr, err
-	}
-
-	if err := validateConfig(cfg); err != nil {
-		return rtr, err
-	}
-
+// TODO: combine config struct with router
+func newRouter(cfg config) (rtr router, err error) {
 	rtr.config = cfg
-
 	return rtr, nil
 }
 

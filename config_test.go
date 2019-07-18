@@ -24,6 +24,7 @@ func TestSetConfigDefaults(t *testing.T) {
 	Assert(cfg.Port, "8675", t)
 	Assert(cfg.Key, "/etc/bashrpc/pki/bashrpc.key", t)
 	Assert(cfg.Cert, "/etc/bashrpc/pki/bashrpc.cert", t)
+	Assert(cfg.Log, "bashrpc.log", t)
 }
 
 var validConfig = config{
@@ -32,12 +33,13 @@ var validConfig = config{
 	Whitelisted: []string{"127.0.0.1"},
 	Key:         "/path/to/key",
 	Cert:        "/path/to/cert",
+	Log:         "/path/to/log",
 }
 
 func TestValidConfig(t *testing.T) {
 	When("config is valid")
 	Then("there should be NO errors")
-	if err := validateConfig(validConfig); err != nil {
+	if err := validateConfig(&validConfig); err != nil {
 		t.Errorf("expected NO errors but received %v", err)
 	}
 }
@@ -48,7 +50,7 @@ func TestConfigMissingPort(t *testing.T) {
 	cfg.Port = ""
 
 	Then("an error is returned")
-	if err := validateConfig(cfg); err == nil {
+	if err := validateConfig(&cfg); err == nil {
 		t.Error("expected errors but received none")
 	}
 }
@@ -59,7 +61,7 @@ func TestConfigMissingSecret(t *testing.T) {
 	cfg.Secret = ""
 
 	Then("an error is returned")
-	if err := validateConfig(cfg); err == nil {
+	if err := validateConfig(&cfg); err == nil {
 		t.Error("expected errors but received none")
 	}
 }
@@ -70,7 +72,7 @@ func TestConfigMissingWhitelisted(t *testing.T) {
 	cfg.Whitelisted = []string{}
 
 	Then("an error is returned")
-	if err := validateConfig(cfg); err == nil {
+	if err := validateConfig(&cfg); err == nil {
 		t.Error("expected errors but received none")
 	}
 }
@@ -81,7 +83,7 @@ func TestConfigMissingKey(t *testing.T) {
 	cfg.Key = ""
 
 	Then("an error is returned")
-	if err := validateConfig(cfg); err == nil {
+	if err := validateConfig(&cfg); err == nil {
 		t.Error("expected errors but received none")
 	}
 }
@@ -92,7 +94,18 @@ func TestConfigMissingCert(t *testing.T) {
 	cfg.Cert = ""
 
 	Then("an error is returned")
-	if err := validateConfig(cfg); err == nil {
+	if err := validateConfig(&cfg); err == nil {
+		t.Error("expected errors but received none")
+	}
+}
+
+func TestConfigMissingLog(t *testing.T) {
+	When("log file is not specified")
+	cfg := validConfig
+	cfg.Log = ""
+
+	Then("an error is returned")
+	if err := validateConfig(&cfg); err == nil {
 		t.Error("expected errors but received none")
 	}
 }
