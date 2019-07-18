@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"testing"
@@ -11,15 +12,10 @@ import (
 	"github.com/pkg/errors"
 )
 
-func fileExists(filename string) bool {
-	info, err := os.Stat(filename)
-	if os.IsNotExist(err) {
-		return false
-
-	}
-	return !info.IsDir()
-
+func createFile(path, content string) error {
+	return ioutil.WriteFile(path, []byte(content), 0644)
 }
+
 func TestInitSSL(t *testing.T) {
 	id, _ := uuid.NewUUID()
 
@@ -53,4 +49,55 @@ func TestInitSSL(t *testing.T) {
 	}
 
 	os.RemoveAll("/tmp/bashrpc")
+}
+
+func TestExistingSSLKey(t *testing.T) {
+	keyPath := "/tmp/test-ssl.key"
+	Given("an SSL key that already exists")
+	if err := createFile(keyPath, "I am a key"); err != nil {
+		t.Error(err)
+	}
+
+	When("initializing SSL key")
+	if _, err := initSSLKey(keyPath); err != nil {
+		t.Error(err)
+	}
+
+	Then("it should NOT be overwritten")
+	key, err := ioutil.ReadFile(keyPath)
+	if err != nil {
+		t.Error(err)
+	}
+
+	Assert(string(key), "I am a key", t)
+
+	os.Remove(keyPath)
+}
+
+func TestExistingSSLCert(t *testing.T) {
+	keyPath := "/tmp/test-ssl.key"
+	certPath := "/tmp/test-ssl.cert"
+	Given("an SSL cert that already exists")
+	if err := createFile(keyPath, "I am a key"); err != nil {
+		t.Error(err)
+	}
+	if err := createFile(certPath, "I am a cert"); err != nil {
+		t.Error(err)
+	}
+
+	When("initializing SSL cert")
+	if _, err := initSSLCert(certPath, keyPath); err != nil {
+		t.Error(err)
+	}
+
+	Then("it should NOT be overwritten")
+	cert, err := ioutil.ReadFile(certPath)
+	if err != nil {
+		t.Error(err)
+	}
+
+	Assert(string(cert), "I am a cert", t)
+
+	os.Remove(keyPath)
+	os.Remove(certPath)
 }

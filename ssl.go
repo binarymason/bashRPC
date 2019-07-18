@@ -8,47 +8,72 @@ import (
 )
 
 // initSSL creates a SSL certificate and key using system's openssl.
-// TODO: don't blow away PKI if it already exists and is valid.
 func initSSL(certPath, keyPath string) ([]byte, error) {
 	if out, err := initRndFile(); err != nil {
 		return out, err
 	}
 
-	fqdn, err := getFQDN()
+	if out, err := initSSLKey(keyPath); err != nil {
+		return out, err
+	}
+
+	return initSSLCert(certPath, keyPath)
+}
+
+func initSSLKey(keyPath string) (out []byte, err error) {
+	if fileExists(keyPath) {
+		return
+	}
+
+	if err = mkdirP(keyPath); err != nil {
+		return
+	}
+
+	return runCommand(fmt.Sprintf("openssl genrsa -out %s 4096", keyPath))
+}
+
+func initSSLCert(certPath, keyPath string) (out []byte, err error) {
+	if fileExists(certPath) {
+		return
+	}
+
+	var fqdn string
+	fqdn, err = getFQDN()
 
 	if err != nil {
-		return []byte{}, err
-	}
-	if err := mkdirP(certPath); err != nil {
-		return []byte{}, err
-	}
-	if err := mkdirP(keyPath); err != nil {
-		return []byte{}, err
+		return
 	}
 
-	command := "openssl"
+	if err = mkdirP(certPath); err != nil {
+		return
+	}
+
 	args := []string{
 		"req",
 		"-new",
-		"-newkey",
-		"rsa:4096",
 		"-days",
 		"3650",
 		"-nodes",
 		"-x509",
+		"-key",
+		keyPath,
 		"-subj",
 		fmt.Sprintf("/C=US/ST=Somewhere/L=Unknown/O=Idk/CN=%s", fqdn),
-		"-keyout",
-		keyPath,
 		"-out",
 		certPath,
 	}
 
-	return runCommand(command + " " + strings.Join(args, " "))
+	return runCommand("openssl " + strings.Join(args, " "))
 }
 
-func initRndFile() ([]byte, error) {
-	return runCommand(`openssl rand -out "$HOME/.rnd" -hex 256`)
+func initRndFile() (out []byte, err error) {
+	rndPath := fmt.Sprintf("%s/.rnd", os.Getenv("HOME"))
+	if fileExists(rndPath) {
+		return
+	}
+
+	command := fmt.Sprintf("openssl rand -out %s -hex 256", rndPath)
+	return runCommand(command)
 }
 
 func getFQDN() (fqdn string, err error) {
@@ -74,4 +99,14 @@ func mkdirP(p string) error {
 	}
 
 	return os.MkdirAll(dir, 0700)
+}
+
+func fileExists(filename string) bool {
+	info, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+
+	}
+	return !info.IsDir()
+
 }
