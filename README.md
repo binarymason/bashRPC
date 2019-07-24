@@ -1,6 +1,17 @@
 # bashRPC
 Simple HTTP server that executes configured commands remotely.
 
+### Why use bashRPC instead of chef/ansible/saltstack/etc?
+
+Use bashRPC when you don't want to give complete super user privileges. That prevents situations like:
+
+```
+salt "*" cmd.run "rm -rf /"
+# - or -
+ansible -i production all -a "rm -rf /"
+```
+
+Instead, you can configure an endpoint that does only a select few super user tasks, such as restarting a system service, etc.
 
 ### Installation
 
@@ -63,7 +74,34 @@ sudo systemctl start bashrpc
 3) ping server
 
 ```bash
-curl -k -H "Authorization: supersecret" https://localhost:8675/uptime
+$ curl -k -H "Authorization: supersecret" https://localhost:8675/uptime
 ```
 
+### Security
 
+There are few security measures implemented in bashRPC:
+
+* No HTTP traffic.  HTTPS is required.
+* User can specify their own SSL certificate, if desired.
+* Restricted to whitelist of IP addresses.
+* `Authorization` header is required for authentication on every request.
+* No parameterized inputs. Every command must be pre-configured in `bashrpc.yml`.
+
+### Output
+
+bashRPC returns plain text responses, very similar if you were to be executing a command over SSH. This makes it easy to save responses to a variable, check for status code, etc. Both STDOUT and STDERR are combined in the output.
+
+```
+$ curl -k -H "Authorization: supersecret" https://localhost:8675/uptime
+14:31:29 up 1 day,  1:16,  2 users,  load average: 1.77, 1.47, 1.43
+```
+
+If you care about whether or not your command fails, you can check the response.  Using `curl`, for example, you can exit non-zero if a command fails using the `--fail` argument:
+
+```
+$ curl -k -H --fail "Authorization: supersecret" https://localhost:8675/iwillfail
+iwillfail: command not found
+
+$ echo "$?"
+1
+```
