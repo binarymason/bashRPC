@@ -15,6 +15,7 @@ DAEMON=/usr/local/bin/bashrpc
 PIDFILE=/var/run/$NAME.pid
 LOGFILE=/var/log/$NAME.log
 CONFIGFILE=/etc/bashrpc/bashrpc.yml
+RETVAL=0
 
 test -x $DAEMON || exit 0
 
@@ -22,12 +23,31 @@ test -x $DAEMON || exit 0
 . /etc/init.d/functions
 
 start() {
+    echo -n "Starting $NAME"
     touch $LOGFILE
-    daemon --pidfile "$PIDFILE" "$DAEMON" -c "$CONFIGFILE" --log "$LOGFILE"
+    daemon --pidfile "$PIDFILE" "nohup $DAEMON -c $CONFIGFILE --log $LOGFILE" &>/dev/null &
+    RETVAL=$?
+    if [ $RETVAL -eq 0 ]; then
+      ps aux | grep $DAEMON | grep -v grep | tr -s " " | cut -d " " -f2 > $PIDFILE
+    fi
+    echo
+
+    success; echo
+    return "$RETVAL"
 }
 
 stop() {
-  killproc -p "$PIDFILE"
+  echo -n "Stopping $NAME"
+  killproc "$DAEMON"
+  RETVAL=$?
+  if [ $RETVAL -eq 0 ]; then
+    rm -f "$PIDFILE"
+    success; echo
+  else
+    failure; echo
+  fi
+
+  return "$RETVAL"
 }
 
 reload() {
@@ -46,20 +66,16 @@ status() {
 
 case "$1" in
     start)
-        echo "Starting $NAME"
         start
     ;;
     stop)
-        echo "Stopping $NAME"
         stop
     ;;
     restart)
-        echo "Restarting $NAME"
         stop
         start
     ;;
     reload)
-        echo "Reloading $NAME"
         reload
     ;;
     status)
