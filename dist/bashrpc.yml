@@ -6,7 +6,7 @@ whitelisted_clients:
   - 127.0.0.1
 
 # REQUIRED:
-# This secret is passed by clients as an Authorization header.  TODO: accept environment variable overrides.
+# This secret is passed by clients as an Authorization header.
 # secret: supersecret
 
 routes:
